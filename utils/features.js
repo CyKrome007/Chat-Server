@@ -12,7 +12,7 @@ const cookieOptions = {
 };
 
 const connectDB = (url) => {
-    mongoose.connect(url, { dbName: process.env.DATABASE_NAME})
+    mongoose.connect(url)
         .then((data) => console.log('Connected to db', data.connection.host))
         .catch((err) => {
             throw err;

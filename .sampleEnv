@@ -1,4 +1,4 @@
-DATABASE_URI = mongodb://localhost:27017/
+DATABASE_URI = mongodb+srv://<Chibuzur>:<txeTMvAs9HAfen1Z>@chat-app.7xz64.mongodb.net/
 DATABASE_NAME = Chibuzur
 PORT = 3000
 JWT_SECRET = afdXhhaJhGHJ%H6G&SD)FJH513JKAdd6dsDHF&*(DFadS
