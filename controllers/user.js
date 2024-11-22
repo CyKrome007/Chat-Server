@@ -1,6 +1,12 @@
 import {User} from '../models/user.js';
-import {cookieOptions, emitEvent, sendToken, uploadFilesToCloudinary} from "../utils/features.js";
-import {compare} from "bcrypt";
+import {
+    cookieOptions,
+    deleteFilesFromCloudinary,
+    emitEvent,
+    sendToken,
+    uploadFilesToCloudinary
+} from "../utils/features.js";
+import {compare, hash} from "bcrypt";
 import {TryCatch} from "../middlewares/error.js";
 import {ErrorHandler} from "../utils/utility.js";
 import {Chat} from "../models/chat.js";
@@ -12,8 +18,6 @@ const register = TryCatch(async (req, res, next) => {
     const { name, username, password, bio } = req.body;
 
     const file = req.file;
-
-    console.log(req)
 
     if(!file)
         return next(new ErrorHandler('Please Upload Avatar'));
@@ -66,7 +70,80 @@ const getMyProfile = TryCatch(async (req, res, next) => {
     });
 });
 
-const logout = TryCatch(async (req, res) => {
+const updateMyProfile = TryCatch(async (req, res, next) => {
+
+    const { name, username, password, bio, deleteFileName} = req.body;
+    const files = req.file;
+
+    const user = await User.findById(req.userId).select('+password');
+
+    if(!user)
+        return next(new ErrorHandler('User not Found!'));
+    let newUser = user;
+
+    if(name !== '' || name !== null)
+        if(name !== newUser.name)
+            newUser.name = name;
+
+    if(bio !== '' || bio !== null)
+        if(bio !== newUser.bio)
+            newUser.bio = bio;
+
+    if(username !== '' || username !== null) {
+        if (username !== newUser.username) {
+            const userName = await User.findOne({username});
+            if (userName)
+                return res.status(400).json({
+                    success: false,
+                    message: 'Username Already Exists'
+                })
+            newUser.username = username;
+        }
+    }
+
+    if(password !== '' || password !== null) {
+        const isPasswordMatch = await compare(password, user.password);
+        if(!isPasswordMatch)
+            newUser.password = await hash(password, 10);
+    }
+
+    if(files) {
+        let result = await deleteFilesFromCloudinary([
+            {
+                public_id: user.avatar.public_id,
+                resource_type: 'image'
+            }
+        ]);
+
+        if(!(result.result !== 'ok' || result.result !== 'not found'))
+            return next(new ErrorHandler('Error Occurred while Updating Avatar', 401));
+        result = await uploadFilesToCloudinary([files]);
+
+        newUser.avatar = {
+            public_id: result[0].public_id,
+            url: result[0].url,
+        }
+    }
+
+    const updatedUser = await User.updateOne({_id: user._id}, newUser);
+
+    if(process.env.NODE_ENV.toString().trim() === 'DEVELOPMENT')
+        res.status(200).json({
+            success: true,
+            message: 'Profile Updated Successfully',
+            user: updatedUser
+        });
+    else
+        res.status(200).json({
+            success: true,
+            message: 'Profile Updated Successfully'
+        });
+});
+
+const logout = TryCatch(async (req, res, next) => {
+
+    const { name, username, password, bio} = req.body;
+    const files = req.file;
 
     return res
         .status(200)
@@ -262,4 +339,5 @@ export {
     acceptFriendRequest,
     getMyNotifications,
     getMyFriends,
+    updateMyProfile,
 };

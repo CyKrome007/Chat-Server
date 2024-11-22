@@ -8,7 +8,8 @@ import {
     logout,
     register,
     searchUser,
-    sendFriendRequest
+    sendFriendRequest,
+    updateMyProfile
 } from '../controllers/user.js';
 import {singleAvatar} from "../middlewares/multer.js";
 import {isAuthenticated} from "../middlewares/auth.js";
@@ -27,6 +28,7 @@ app.post('/login', loginValidator(), validateHandler, login);
 
 app.use(isAuthenticated);
 app.get('/profile', getMyProfile);
+app.post('/update', singleAvatar, updateMyProfile);
 app.get('/logout', logout);
 app.get('/search', searchUser);
 app.put('/sendrequest', sendRequestValidator(), validateHandler, sendFriendRequest);
