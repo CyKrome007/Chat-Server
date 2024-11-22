@@ -6,7 +6,7 @@ COOKIE = chibuzur-token
 ADMIN_COOKIE = chibuzur-admin-token
 ADMIN_SECRET_KEY = KoregaJiyuda
 NDOE_ENV = DEVELOPMENT
-CLIENT_URL =
+CLIENT_URL = https://chat-client-mu-ebon.vercel.app/
 
 CLOUDINARY_CLOUD_NAME = dgohopnfa
 CLOUDINARY_API_KEY = 146628375345526

@@ -36,7 +36,9 @@ const adminSecretKey = process.env.ADMIN_SECRET_KEY || 'HAZIFUN';
 const userSocketIDs = new Map();
 const onlineUsers = new Set();
 
-connectDB(dbURI);
+connectDB(dbURI, {
+    databaseName: process.env.DATABASE_NAME.toString()
+});
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
