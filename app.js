@@ -36,14 +36,17 @@ const adminSecretKey = process.env.ADMIN_SECRET_KEY || 'HAZIFUN';
 const userSocketIDs = new Map();
 const onlineUsers = new Set();
 
+console.log('dbName:', process.env.DATABASE_NAME.toString().trim());
+console.log('Cookie Name:', process.env.COOKIE);
+
 connectDB(dbURI, {
-    databaseName: process.env.DATABASE_NAME.toString()
+    dbName: process.env.DATABASE_NAME.toString().trim()
 });
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME.toString().trim(),
+    api_key: process.env.CLOUDINARY_API_KEY.toString().trim(),
+    api_secret: process.env.CLOUDINARY_API_SECRET.toString().trim(),
 });
 
 // createSingleChats(10);
